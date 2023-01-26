@@ -30,8 +30,12 @@ const argv = yargs
   const configFilePath = `./config/config.json5`;
   const config = JSON5.parse(await readFile(configFilePath, 'utf8'))
 
-  const result: Results = await readCsv(argv.tableName, argv.readCsvFileDirectory || config.readCsvFileDirectory);
-  const templateData = await sqlTemplate(argv.tableName, result.columns, result.records);
+  // const result: Results = await readCsv(argv.tableName, argv.readCsvFileDirectory || config.readCsvFileDirectory);
+  // const templateData = await sqlTemplate(argv.tableName, result.columns, result.records);
+  //
+  // await exportSql(argv.exportSqlFileDirectory || config.exportSqlFileDirectory, argv.tableName, templateData);
 
-  await exportSql(argv.exportSqlFileDirectory || config.exportSqlFileDirectory, argv.tableName, templateData);
+  console.log(config);
+
+
 })();

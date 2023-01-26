@@ -1,3 +1,3 @@
 
-convert:
-	npx ts-node convert.ts
+generateSql:
+	npx ts-node generate.ts
