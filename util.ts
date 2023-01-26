@@ -1,7 +1,12 @@
 import * as fs from 'fs';
 import * as csv from 'csv-parser';
 
-export const readCsv = async (tableName) => {
+export interface Results {
+  columns: string[];
+  records: string[];
+}
+
+export const readCsv = async (tableName): Promise<Results> => {
   const fileName = `files/${tableName}.csv`;
   const results = {
     columns: [],
