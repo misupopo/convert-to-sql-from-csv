@@ -1,6 +1,4 @@
 import * as yargs from 'yargs';
-import * as fs from 'fs';
-import * as csv from 'csv-parser';
 import { readCsv, Results } from './util';
 import { sqlTemplate } from './sqlTemplate';
 
@@ -16,6 +14,10 @@ const argv = yargs
 
 (async () => {
   const result: Results = await readCsv(argv.tableName);
-  await sqlTemplate(argv.tableName, result.columns, result.records);
+  const templateData = await sqlTemplate(argv.tableName, result.columns, result.records);
+
+  console.log(templateData);
+
+
 
 })();

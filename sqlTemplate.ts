@@ -3,14 +3,12 @@ export const sqlTemplate = async (
   tableName: string,
   columns: string[],
   records: Object[],
-) => {
+): Promise<string> => {
   const result = enumerateColumns(columns);
 
-  const template = `INSERT INTO \`${tableName}\` (${result}) \n` +
+  return `INSERT INTO \`${tableName}\` (${result}) \n` +
     `VALUES\n` +
     `${emulateRecords(records)};`;
-
-  console.log(template);
 }
 
 const enumerateColumns = (columns: string[]) => {
@@ -22,7 +20,7 @@ const emulateRecords = (columns: Object[]) => {
     const lastIndexNumber = Object.keys(row).length - 1;
 
     return Object.keys(row).reduce((columnValue, key, index) => {
-      columnValue = `${columnValue}'${row[key]}'${index === lastIndexNumber ? '' : ','} `;
+      columnValue = `${columnValue}'${row[key]}'${index === lastIndexNumber ? '' : ','}${index === lastIndexNumber ? '' : ' '}`;
       return columnValue;
     }, '');
   }
