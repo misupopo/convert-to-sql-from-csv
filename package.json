@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "csv-parser": "^3.0.0",
+    "json5": "^2.2.3",
     "yargs": "^17.6.2"
   }
 }

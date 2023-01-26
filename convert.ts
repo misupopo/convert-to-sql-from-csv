@@ -1,6 +1,8 @@
 import * as yargs from 'yargs';
-import { readCsv, Results } from './util';
+import { readCsv, Results, exportSql } from './util';
 import { sqlTemplate } from './sqlTemplate';
+import * as JSON5 from 'json5';
+import { readFile } from 'fs/promises';
 
 const argv = yargs
   .option('tableName', {
@@ -9,15 +11,27 @@ const argv = yargs
     demandOption: true,
     type: 'string',
   })
+  .option('readCsvFileDirectory', {
+    alias: 'r',
+    description: 'read csv file directory',
+    demandOption: false,
+    type: 'string',
+  })
+  .option('exportSqlFileDirectory', {
+    alias: 'r',
+    description: 'export sql file directory',
+    demandOption: false,
+    type: 'string',
+  })
   .help()
   .parseSync();
 
 (async () => {
-  const result: Results = await readCsv(argv.tableName);
+  const configFilePath = `./config/config.json5`;
+  const config = JSON5.parse(await readFile(configFilePath, 'utf8'))
+
+  const result: Results = await readCsv(argv.tableName, argv.readCsvFileDirectory || config.readCsvFileDirectory);
   const templateData = await sqlTemplate(argv.tableName, result.columns, result.records);
 
-  console.log(templateData);
-
-
-
+  await exportSql(argv.exportSqlFileDirectory || config.exportSqlFileDirectory, argv.tableName, templateData);
 })();

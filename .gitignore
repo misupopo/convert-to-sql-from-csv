@@ -1,1 +1,4 @@
 node_modules
+export/*
+csv/*
+config.json5
