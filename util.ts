@@ -2,14 +2,15 @@ import * as fs from 'fs';
 import * as csv from 'csv-parser';
 import { stat } from 'fs/promises';
 import { exec } from 'child_process';
+import { mysqlColumnType } from './enum';
 
 export interface Results {
   columns: string[];
   records: string[];
 }
 
-export const readCsv = async (tableName, readCsvFileDirectory): Promise<Results> => {
-  const readFilePath = `${readCsvFileDirectory}/${tableName}.csv`;
+export const readCsv = async (readCsvFilePath): Promise<Results> => {
+  const readFilePath = `${readCsvFilePath}`;
 
   try {
     await stat(readFilePath);
@@ -38,14 +39,43 @@ export const readCsv = async (tableName, readCsvFileDirectory): Promise<Results>
   });
 }
 
-export const exportSql = async (exportSqlFileDirectory, fileName, templateData) => {
+export const exportFile = async (exportSqlFileDirectory, fileName, templateData, extension) => {
   await execCommand(`mkdir -p ${exportSqlFileDirectory}`);
 
-  const sqlFile = `${exportSqlFileDirectory}/${fileName}.sql`;
+  const sqlFilePath = `${exportSqlFileDirectory}/${fileName}.${extension}`;
 
-  await execCommand(`touch ${sqlFile}`);
+  await execCommand(`touch ${sqlFilePath}`);
 
-  fs.writeFileSync(sqlFile, templateData);
+  fs.writeFileSync(sqlFilePath, templateData);
+}
+
+export const readSqlType = async (referSqlStructureFilePath, columns) => {
+  const sqlFilePath = `${referSqlStructureFilePath}`;
+
+  const splitContents = fs.readFileSync(sqlFilePath, 'utf8').split('\n');
+
+  console.log('columns: ', columns)
+
+  const structure = columns.reduce((object, column) => {
+    const matchedColumnSqlLine = splitContents.find((splitContent) => {
+      return splitContent.includes(column);
+    });
+
+    console.log('column: ', column)
+    console.log('matchedColumnSqlLine: ', matchedColumnSqlLine);
+
+    if (matchedColumnSqlLine) {
+       const matchedMysqlColumnTypeKeyName = Object.keys(mysqlColumnType).find((type) => {
+        return matchedColumnSqlLine.includes(type)
+      });
+
+      object[column] = mysqlColumnType[matchedMysqlColumnTypeKeyName];
+    }
+
+    return object;
+  }, {});
+
+  console.log(structure);
 }
 
 const execCommand = (command: string) => {
